@@ -7,6 +7,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, precision_recall_curve, f1_score, auc
+from yellowbrick.classifier import ClassificationReport
 from scipy import stats
 import matplotlib.pyplot as plt
 
@@ -43,10 +44,12 @@ clf = MLPClassifier(random_state=1, max_iter=150).fit(data_train, target_train)
 pred = clf.predict(data_test)
 
 classification = classification_report(target_test, pred, output_dict=True)
+
 precision = 'Precision : ' + str(classification['weighted avg']['precision'])
 recall = 'Recall    : ' + str(classification['weighted avg']['recall'])
 fscore = 'F-score   : ' + str(classification['weighted avg']['f1-score'])
 accuracy = 'Accuracy  : ' + str(classification['accuracy'])
+
 
 # parameter_space = {
 #     'hidden_layer_sizes': [(50, 50, 50), (100,)],
@@ -65,6 +68,10 @@ accuracy = 'Accuracy  : ' + str(classification['accuracy'])
 # for mean, std, params in zip(means, stds, grid.cv_results_['params']):
 #     print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
 
+classification_ = ClassificationReport(clf, classes=['Won', 'Loss'])
+classification_.fit(data_train, target_train)
+classification_.score(data_test, target_test)
+classification_.show()
 
 prob_pos = clf.predict_proba(data_test)[:, 1]
 
